@@ -1,0 +1,6 @@
+numpy>=1.24
+pandas>=2.0
+requests>=2.31
+astropy>=5.2
+pyarrow>=14.0
+h5py>=3.10
