@@ -4,3 +4,4 @@ requests>=2.31
 astropy>=5.2
 pyarrow>=14.0
 h5py>=3.10
+torch>=2.3
