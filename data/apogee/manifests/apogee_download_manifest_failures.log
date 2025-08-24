@@ -1,0 +1,2 @@
+APOGEE_ID	TRIED_URLS	ERROR
+2M00000002+7417074	https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/120+12/apStar-dr17-2M00000002+7417074.fits; https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/field/apStar-dr17-2M00000002+7417074.fits; https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/apStar-dr17-2M00000002+7417074.fits	all_urls_failed

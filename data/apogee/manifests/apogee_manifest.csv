@@ -1,0 +1,6 @@
+remote_url,local_path,status,http_status,bytes
+https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/field/apStar-dr17-2M00000000+0000000.fits,data/apogee/apStar/apStar-dr17-2M00000000+0000000.fits,pending,200,1048576
+https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/field/apStar-dr17-2M00000001+0000000.fits,data/apogee/apStar/apStar-dr17-2M00000001+0000000.fits,pending,200,1048576
+https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/field/apStar-dr17-2M00000002+0000000.fits,data/apogee/apStar/apStar-dr17-2M00000002+0000000.fits,pending,200,1048576
+https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/field/apStar-dr17-2M00000003+0000000.fits,data/apogee/apStar/apStar-dr17-2M00000003+0000000.fits,pending,200,1048576
+https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/field/apStar-dr17-2M00000004+0000000.fits,data/apogee/apStar/apStar-dr17-2M00000004+0000000.fits,pending,200,1048576

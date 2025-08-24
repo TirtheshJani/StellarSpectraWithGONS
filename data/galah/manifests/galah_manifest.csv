@@ -1,0 +1,13 @@
+remote_url,local_path,status,http_status,bytes
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/blue/140301000_blue.fits,data/galah/140301000/140301000_blue.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/green/140301000_green.fits,data/galah/140301000/140301000_green.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/red/140301000_red.fits,data/galah/140301000/140301000_red.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/ir/140301000_ir.fits,data/galah/140301000/140301000_ir.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/blue/140301001_blue.fits,data/galah/140301001/140301001_blue.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/green/140301001_green.fits,data/galah/140301001/140301001_green.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/red/140301001_red.fits,data/galah/140301001/140301001_red.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/ir/140301001_ir.fits,data/galah/140301001/140301001_ir.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/blue/140301002_blue.fits,data/galah/140301002/140301002_blue.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/green/140301002_green.fits,data/galah/140301002/140301002_green.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/red/140301002_red.fits,data/galah/140301002/140301002_red.fits,pending,200,524288
+https://datacentral.org.au/services/download/gx/galah/dr3/spectra/ir/140301002_ir.fits,data/galah/140301002/140301002_ir.fits,pending,200,524288

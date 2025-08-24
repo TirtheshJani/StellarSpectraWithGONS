@@ -1,0 +1,3 @@
+apogee_id,local_path,telescope,field,status,bytes,successful_url
+2M00000002+7417074,data/apogee/apStar/apStar-dr17-2M00000002+7417074.fits,apo25m,120+12,failed,0,
+2M00000019-1924498,data/apogee/apStar/apStar-dr17-2M00000019-1924498.fits,apo25m,060-75,success,2548800,https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo25m/060-75/apStar-dr17-2M00000019-1924498.fits

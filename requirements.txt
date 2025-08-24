@@ -9,3 +9,6 @@ dvc[gs,s3,ssh]>=3.50
 pyyaml>=6.0
 matplotlib>=3.8
 jupyterlab>=4.1
+tqdm>=4.65
+astroNN>=1.1
+scipy>=1.10

@@ -1,0 +1,1112 @@
+{
+  "metadata": {
+    "total_targets": 100,
+    "surveys": [
+      "apogee"
+    ],
+    "creation_date": "2025-01-23",
+    "source": "APOGEE DR17"
+  },
+  "targets": [
+    {
+      "target_id": 0,
+      "apogee_id": "2M00000002+7417074",
+      "ra": 0.000103,
+      "dec": 74.285408,
+      "telescope": "apo25m",
+      "field": "120+12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 1,
+      "apogee_id": "2M00000019-1924498",
+      "ra": 0.000832,
+      "dec": -19.413851,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 2,
+      "apogee_id": "2M00000032+5737103",
+      "ra": 0.001335,
+      "dec": 57.61953,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 3,
+      "apogee_id": "2M00000032+5737103",
+      "ra": 0.001335,
+      "dec": 57.61953,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 4,
+      "apogee_id": "2M00000035-7323394",
+      "ra": 0.001467,
+      "dec": -73.394287,
+      "telescope": "lco25m",
+      "field": "SMC12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 5,
+      "apogee_id": "2M00000068+5710233",
+      "ra": 0.00285,
+      "dec": 57.173164,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 6,
+      "apogee_id": "2M00000103+1525513",
+      "ra": 0.004322,
+      "dec": 15.430942,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 7,
+      "apogee_id": "2M00000133+5721163",
+      "ra": 0.005558,
+      "dec": 57.354549,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 8,
+      "apogee_id": "2M00000211+6327470",
+      "ra": 0.008802,
+      "dec": 63.463078,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 9,
+      "apogee_id": "2M00000222+5625359",
+      "ra": 0.009287,
+      "dec": 56.426662,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 10,
+      "apogee_id": "2M00000233+1452324",
+      "ra": 0.009748,
+      "dec": 14.875667,
+      "telescope": "apo25m",
+      "field": "105-45",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 11,
+      "apogee_id": "2M00000317+5821383",
+      "ra": 0.013232,
+      "dec": 58.360649,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 12,
+      "apogee_id": "2M00000446+5854329",
+      "ra": 0.018603,
+      "dec": 58.909149,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 13,
+      "apogee_id": "2M00000506+5656353",
+      "ra": 0.021113,
+      "dec": 56.943142,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 14,
+      "apogee_id": "2M00000506+5656353",
+      "ra": 0.021113,
+      "dec": 56.943142,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 15,
+      "apogee_id": "2M00000523-1937381",
+      "ra": 0.021818,
+      "dec": -19.627274,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 16,
+      "apogee_id": "2M00000535+1504343",
+      "ra": 0.022311,
+      "dec": 15.07621,
+      "telescope": "apo25m",
+      "field": "105-45",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 17,
+      "apogee_id": "2M00000535+1504343",
+      "ra": 0.022311,
+      "dec": 15.07621,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 18,
+      "apogee_id": "2M00000546+6152107",
+      "ra": 0.022759,
+      "dec": 61.869644,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 19,
+      "apogee_id": "2M00000549+1524008",
+      "ra": 0.022905,
+      "dec": 15.400249,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 20,
+      "apogee_id": "2M00000585+1451550",
+      "ra": 0.024397,
+      "dec": 14.865286,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 21,
+      "apogee_id": "2M00000644+5733530",
+      "ra": 0.02687,
+      "dec": 57.564724,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 22,
+      "apogee_id": "2M00000662+7528598",
+      "ra": 0.027622,
+      "dec": 75.483292,
+      "telescope": "apo25m",
+      "field": "120+12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 23,
+      "apogee_id": "2M00000717-7213573",
+      "ra": 0.029898,
+      "dec": -72.232605,
+      "telescope": "lco25m",
+      "field": "SMC12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 24,
+      "apogee_id": "2M00000797+6436119",
+      "ra": 0.03324,
+      "dec": 64.603325,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 25,
+      "apogee_id": "2M00000799+7939442",
+      "ra": 0.033324,
+      "dec": 79.662292,
+      "telescope": "apo25m",
+      "field": "120+18",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 26,
+      "apogee_id": "2M00000818+5634264",
+      "ra": 0.034096,
+      "dec": 56.574017,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 27,
+      "apogee_id": "2M00000866+7122144",
+      "ra": 0.036099,
+      "dec": 71.370689,
+      "telescope": "apo25m",
+      "field": "120+08",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 28,
+      "apogee_id": "2M00000940+5515185",
+      "ra": 0.039186,
+      "dec": 55.255161,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 29,
+      "apogee_id": "2M00000943+6254542",
+      "ra": 0.03931,
+      "dec": 62.915077,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 30,
+      "apogee_id": "2M00001045+6126148",
+      "ra": 0.043567,
+      "dec": 61.437454,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 31,
+      "apogee_id": "2M00001071+6258172",
+      "ra": 0.04464,
+      "dec": 62.97147,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 32,
+      "apogee_id": "2M00001104+6348085",
+      "ra": 0.046017,
+      "dec": 63.802372,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 33,
+      "apogee_id": "2M00001153+5736447",
+      "ra": 0.048061,
+      "dec": 57.612431,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 34,
+      "apogee_id": "2M00001199+6114138",
+      "ra": 0.049987,
+      "dec": 61.237167,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 35,
+      "apogee_id": "2M00001210-1903382",
+      "ra": 0.050442,
+      "dec": -19.060629,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 36,
+      "apogee_id": "2M00001217-1949306",
+      "ra": 0.050724,
+      "dec": -19.825167,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 37,
+      "apogee_id": "2M00001231-7218301",
+      "ra": 0.051319,
+      "dec": -72.308365,
+      "telescope": "lco25m",
+      "field": "SMC12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 38,
+      "apogee_id": "2M00001242+5524391",
+      "ra": 0.051787,
+      "dec": 55.410862,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 39,
+      "apogee_id": "2M00001242+5524391",
+      "ra": 0.051787,
+      "dec": 55.410862,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 40,
+      "apogee_id": "2M00001296+5851378",
+      "ra": 0.054009,
+      "dec": 58.8605,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 41,
+      "apogee_id": "2M00001328+5725563",
+      "ra": 0.05535,
+      "dec": 57.432327,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 42,
+      "apogee_id": "2M00001362-1913042",
+      "ra": 0.056761,
+      "dec": -19.217836,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 43,
+      "apogee_id": "2M00001476+5607372",
+      "ra": 0.061509,
+      "dec": 56.127014,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 44,
+      "apogee_id": "2M00001493+5534446",
+      "ra": 0.062212,
+      "dec": 55.579067,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 45,
+      "apogee_id": "2M00001508+6229364",
+      "ra": 0.062859,
+      "dec": 62.493454,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 46,
+      "apogee_id": "2M00001616+1606151",
+      "ra": 0.067374,
+      "dec": 16.104208,
+      "telescope": "apo25m",
+      "field": "105-45",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 47,
+      "apogee_id": "2M00001638+7924440",
+      "ra": 0.068263,
+      "dec": 79.412231,
+      "telescope": "apo25m",
+      "field": "120+18",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 48,
+      "apogee_id": "2M00001648+6306232",
+      "ra": 0.068697,
+      "dec": 63.106445,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 49,
+      "apogee_id": "2M00001649-7342309",
+      "ra": 0.068727,
+      "dec": -73.708603,
+      "telescope": "lco25m",
+      "field": "SMC12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 50,
+      "apogee_id": "2M00001653+5540107",
+      "ra": 0.068896,
+      "dec": 55.66964,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 51,
+      "apogee_id": "2M00001687+5903034",
+      "ra": 0.070298,
+      "dec": 59.050957,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 52,
+      "apogee_id": "2M00001701+7052395",
+      "ra": 0.070897,
+      "dec": 70.877655,
+      "telescope": "apo25m",
+      "field": "120+08",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 53,
+      "apogee_id": "2M00001717+6147500",
+      "ra": 0.071565,
+      "dec": 61.797249,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 54,
+      "apogee_id": "2M00001719+6221324",
+      "ra": 0.071635,
+      "dec": 62.359013,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 55,
+      "apogee_id": "2M00001809+5939417",
+      "ra": 0.07538,
+      "dec": 59.661602,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 56,
+      "apogee_id": "2M00001877+5938132",
+      "ra": 0.078214,
+      "dec": 59.637016,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 57,
+      "apogee_id": "2M00001952+7026133",
+      "ra": 0.081366,
+      "dec": 70.437042,
+      "telescope": "apo25m",
+      "field": "120+08",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 58,
+      "apogee_id": "2M00001962+6502429",
+      "ra": 0.081787,
+      "dec": 65.045258,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 59,
+      "apogee_id": "2M00001977-2003393",
+      "ra": 0.082388,
+      "dec": -20.060944,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 60,
+      "apogee_id": "2M00002005+5703467",
+      "ra": 0.083554,
+      "dec": 57.062996,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 61,
+      "apogee_id": "2M00002005+5703467",
+      "ra": 0.083554,
+      "dec": 57.062996,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 62,
+      "apogee_id": "2M00002012+5612368",
+      "ra": 0.083874,
+      "dec": 56.210224,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 63,
+      "apogee_id": "2M00002021+6302567",
+      "ra": 0.084227,
+      "dec": 63.049103,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 64,
+      "apogee_id": "2M00002035+6250406",
+      "ra": 0.084806,
+      "dec": 62.844631,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 65,
+      "apogee_id": "2M00002036+6153416",
+      "ra": 0.084866,
+      "dec": 61.894894,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 66,
+      "apogee_id": "2M00002038-1912052",
+      "ra": 0.084935,
+      "dec": -19.201466,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 67,
+      "apogee_id": "2M00002039+5651114",
+      "ra": 0.084983,
+      "dec": 56.853188,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 68,
+      "apogee_id": "2M00002039+5651114",
+      "ra": 0.084983,
+      "dec": 56.853188,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 69,
+      "apogee_id": "2M00002039+5651114",
+      "ra": 0.084983,
+      "dec": 56.853188,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 70,
+      "apogee_id": "2M00002063+1404279",
+      "ra": 0.08597,
+      "dec": 14.074443,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 71,
+      "apogee_id": "2M00002108+5527251",
+      "ra": 0.087843,
+      "dec": 55.456989,
+      "telescope": "apo25m",
+      "field": "NGC7789_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 72,
+      "apogee_id": "2M00002118+6136420",
+      "ra": 0.088255,
+      "dec": 61.611687,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 73,
+      "apogee_id": "2M00002141+8606336",
+      "ra": 0.089231,
+      "dec": 86.10936,
+      "telescope": "apo25m",
+      "field": "N188",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 74,
+      "apogee_id": "2M00002142-1929009",
+      "ra": 0.089254,
+      "dec": -19.483599,
+      "telescope": "apo25m",
+      "field": "060-75",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 75,
+      "apogee_id": "2M00002185+1459100",
+      "ra": 0.091079,
+      "dec": 14.986116,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 76,
+      "apogee_id": "2M00002189+1514141",
+      "ra": 0.091236,
+      "dec": 15.237252,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 77,
+      "apogee_id": "2M00002227+6223341",
+      "ra": 0.092792,
+      "dec": 62.392815,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 78,
+      "apogee_id": "2M00002304+6151253",
+      "ra": 0.096021,
+      "dec": 61.857037,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 79,
+      "apogee_id": "2M00002338+6457409",
+      "ra": 0.09742,
+      "dec": 64.961372,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 80,
+      "apogee_id": "2M00002338+6141442",
+      "ra": 0.097458,
+      "dec": 61.695633,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 81,
+      "apogee_id": "2M00002388+6151472",
+      "ra": 0.099521,
+      "dec": 61.863117,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 82,
+      "apogee_id": "2M00002422+5642193",
+      "ra": 0.100924,
+      "dec": 56.705364,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 83,
+      "apogee_id": "2M00002472+5518473",
+      "ra": 0.103019,
+      "dec": 55.313148,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 84,
+      "apogee_id": "2M00002504+1517108",
+      "ra": 0.10437,
+      "dec": 15.286342,
+      "telescope": "apo25m",
+      "field": "105-45",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 85,
+      "apogee_id": "2M00002504+1517108",
+      "ra": 0.10437,
+      "dec": 15.286342,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 86,
+      "apogee_id": "2M00002509+7040316",
+      "ra": 0.104582,
+      "dec": 70.675446,
+      "telescope": "apo25m",
+      "field": "120+08",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 87,
+      "apogee_id": "2M00002530+1540564",
+      "ra": 0.105437,
+      "dec": 15.682337,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 88,
+      "apogee_id": "2M00002553+5612163",
+      "ra": 0.10641,
+      "dec": 56.204552,
+      "telescope": "apo25m",
+      "field": "NGC7789_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 89,
+      "apogee_id": "2M00002561+5528511",
+      "ra": 0.106725,
+      "dec": 55.480873,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 90,
+      "apogee_id": "2M00002588+6130109",
+      "ra": 0.107837,
+      "dec": 61.503044,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 91,
+      "apogee_id": "2M00002596+7433383",
+      "ra": 0.108168,
+      "dec": 74.560654,
+      "telescope": "apo25m",
+      "field": "120+12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 92,
+      "apogee_id": "2M00002679+5920508",
+      "ra": 0.111632,
+      "dec": 59.347458,
+      "telescope": "apo25m",
+      "field": "116-04",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 93,
+      "apogee_id": "2M00002707+1424316",
+      "ra": 0.1128,
+      "dec": 14.40879,
+      "telescope": "apo25m",
+      "field": "107-46_MGA",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 94,
+      "apogee_id": "2M00002728-7318506",
+      "ra": 0.113674,
+      "dec": -73.314072,
+      "telescope": "lco25m",
+      "field": "SMC12",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 95,
+      "apogee_id": "2M00002853+6119307",
+      "ra": 0.118884,
+      "dec": 61.325195,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 96,
+      "apogee_id": "2M00002868+5550240",
+      "ra": 0.119503,
+      "dec": 55.840004,
+      "telescope": "apo25m",
+      "field": "N7789",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 97,
+      "apogee_id": "2M00002873+8426345",
+      "ra": 0.11973,
+      "dec": 84.442932,
+      "telescope": "apo25m",
+      "field": "NGC188_btx",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 98,
+      "apogee_id": "2M00002903+6403157",
+      "ra": 0.120994,
+      "dec": 64.054382,
+      "telescope": "apo25m",
+      "field": "117+01",
+      "surveys": [
+        "apogee"
+      ]
+    },
+    {
+      "target_id": 99,
+      "apogee_id": "2M00002908+6140446",
+      "ra": 0.121186,
+      "dec": 61.67907,
+      "telescope": "apo25m",
+      "field": "116+00",
+      "surveys": [
+        "apogee"
+      ]
+    }
+  ]
+}

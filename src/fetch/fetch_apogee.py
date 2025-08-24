@@ -102,16 +102,21 @@ def candidate_apvisit_urls(telescope: str, plate: int, mjd: int, fiberid: int) -
 	return urls
 
 
-def build_manifest(starlist_parquet: str, out_csv: str) -> None:
+def build_manifest(starlist_parquet: str, out_csv: str, base_dir: str = 'data') -> None:
 	if not os.path.exists(starlist_parquet):
 		raise FileNotFoundError(starlist_parquet)
 	df = pd.read_parquet(starlist_parquet)
 	if 'apogee_id' not in df.columns:
 		raise ValueError("starlist parquet missing 'apogee_id'")
 	ids = df['apogee_id'].dropna().astype(str).unique().tolist()
-	stars, visits = fetch_apogee_meta(ids)
+	try:
+		stars, visits = fetch_apogee_meta(ids)
+	except Exception:
+		stars = pd.DataFrame(columns=['apogee_id','telescope','field','location_id'])
+		visits = pd.DataFrame(columns=['apogee_id','telescope','plate','mjd','fiberid'])
 	rows: List[Dict[str, object]] = []
 	# apStar entries
+	processed_ids = set()
 	for _, r in stars.iterrows():
 		apogee_id = str(r['apogee_id'])
 		tel = str(r['telescope']) if pd.notna(r['telescope']) else None
@@ -120,7 +125,24 @@ def build_manifest(starlist_parquet: str, out_csv: str) -> None:
 		for url in candidate_apstar_urls(apogee_id, tel, field, locid):
 			status, size = http_head(url, timeout=20)
 			if status == 200:
-				local_path = os.path.join('/workspace/data', 'apogee', 'apStar', f"apStar-dr17-{apogee_id}.fits")
+				local_path = os.path.join(base_dir, 'apogee', 'apStar', f"apStar-dr17-{apogee_id}.fits")
+				rows.append({
+					'remote_url': url,
+					'local_path': local_path,
+					'status': 'pending',
+					'http_status': status,
+					'bytes': size,
+				})
+				processed_ids.add(apogee_id)
+				break
+	# Fallback for apStar using hashed/generic paths if metadata failed
+	for apogee_id in ids:
+		if apogee_id in processed_ids:
+			continue
+		for url in candidate_apstar_urls(apogee_id, None, None, None):
+			status, size = http_head(url, timeout=20)
+			if status == 200:
+				local_path = os.path.join(base_dir, 'apogee', 'apStar', f"apStar-dr17-{apogee_id}.fits")
 				rows.append({
 					'remote_url': url,
 					'local_path': local_path,
@@ -143,7 +165,7 @@ def build_manifest(starlist_parquet: str, out_csv: str) -> None:
 			status, size = http_head(url, timeout=20)
 			if status == 200:
 				name = f"apVisit-dr17-{tel}-{plate}-{mjd}-{fiber:03d}.fits"
-				local_path = os.path.join('/workspace/data', 'apogee', 'apVisit', name)
+				local_path = os.path.join(base_dir, 'apogee', 'apVisit', name)
 				rows.append({
 					'remote_url': url,
 					'local_path': local_path,
@@ -156,7 +178,7 @@ def build_manifest(starlist_parquet: str, out_csv: str) -> None:
 	print(f"Wrote APOGEE manifest with {len(rows)} entries -> {out_csv}")
 
 
-def download_from_manifest(manifest_csv: str, concurrency: int = 8) -> None:
+def download_from_manifest(manifest_csv: str, concurrency: int = 8, downloader: str = 'python') -> None:
 	import csv
 	pairs: List[Tuple[str, str]] = []
 	with open(manifest_csv, 'r') as f:
@@ -164,7 +186,8 @@ def download_from_manifest(manifest_csv: str, concurrency: int = 8) -> None:
 		for row in r:
 			pairs.append((row['remote_url'], row['local_path']))
 	results = parallel_download(pairs, concurrency=concurrency, timeout=180,
-								 verify_cb=lambda p: verify_fits_basic(p, required_headers=['TELESCOP']))
+								 verify_cb=lambda p: verify_fits_basic(p, required_headers=['TELESCOP']),
+								 downloader=downloader)
 	rows = []
 	for res in results:
 		rows.append({
@@ -182,17 +205,19 @@ def download_from_manifest(manifest_csv: str, concurrency: int = 8) -> None:
 
 def main(argv: List[str] = None) -> None:
 	p = argparse.ArgumentParser(description='APOGEE DR17 manifest builder and downloader')
-	p.add_argument('--starlist', default='/workspace/data/common/manifests/starlist_30k.parquet')
-	p.add_argument('--manifest', default='/workspace/data/apogee/manifests/apogee_manifest.csv')
+	p.add_argument('--starlist', default=os.path.join('data', 'common', 'manifests', 'starlist_30k.parquet'))
+	p.add_argument('--manifest', default=os.path.join('data', 'apogee', 'manifests', 'apogee_manifest.csv'))
+	p.add_argument('--base-dir', default='data')
 	p.add_argument('--mode', choices=['build', 'download', 'both'], default='both')
 	p.add_argument('--concurrency', type=int, default=8)
+	p.add_argument('--downloader', choices=['python', 'wget'], default='python')
 	args = p.parse_args(argv)
 
 	ensure_dir(os.path.dirname(args.manifest))
 	if args.mode in {'build', 'both'}:
-		build_manifest(args.starlist, args.manifest)
+		build_manifest(args.starlist, args.manifest, base_dir=args.base_dir)
 	if args.mode in {'download', 'both'}:
-		download_from_manifest(args.manifest, concurrency=args.concurrency)
+		download_from_manifest(args.manifest, concurrency=args.concurrency, downloader=args.downloader)
 
 
 if __name__ == '__main__':

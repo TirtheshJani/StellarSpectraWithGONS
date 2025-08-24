@@ -49,7 +49,7 @@ def query_eso_tap(ra: float, dec: float, radius_arcsec: float = 1.0) -> List[Dic
 	return results
 
 
-def build_manifest(starlist_parquet: str, out_csv: str) -> None:
+def build_manifest(starlist_parquet: str, out_csv: str, base_dir: str = 'data') -> None:
 	if not os.path.exists(starlist_parquet):
 		raise FileNotFoundError(starlist_parquet)
 	df = pd.read_parquet(starlist_parquet)
@@ -69,7 +69,7 @@ def build_manifest(starlist_parquet: str, out_csv: str) -> None:
 		remote = best.get('access_url') or f"https://dataportal.eso.org/dataPortal/api/requests/{best.get('dp_id')}"
 		code, size = http_head(remote, timeout=20)
 		local_name = f"ges_uves_{ra:.6f}_{dec:.6f}.fits"
-		local_path = os.path.join('/workspace/data', 'ges', 'uves', local_name)
+		local_path = os.path.join(base_dir, 'ges', 'uves', local_name)
 		rows.append({
 			'remote_url': remote,
 			'local_path': local_path,
@@ -81,7 +81,7 @@ def build_manifest(starlist_parquet: str, out_csv: str) -> None:
 	print(f"Wrote GES UVES manifest with {len(rows)} entries -> {out_csv}")
 
 
-def download_from_manifest(manifest_csv: str, concurrency: int = 4) -> None:
+def download_from_manifest(manifest_csv: str, concurrency: int = 4, downloader: str = 'python') -> None:
 	import csv
 	pairs: List[Tuple[str, str]] = []
 	with open(manifest_csv, 'r') as f:
@@ -107,7 +107,7 @@ def download_from_manifest(manifest_csv: str, concurrency: int = 4) -> None:
 				return True
 			return True
 	results = parallel_download(pairs, concurrency=concurrency, timeout=180,
-								 verify_cb=check_ges)
+								 verify_cb=check_ges, downloader=downloader)
 	# overwrite manifest
 	rows = []
 	for res in results:
@@ -127,17 +127,19 @@ def download_from_manifest(manifest_csv: str, concurrency: int = 4) -> None:
 
 def main(argv: List[str] = None) -> None:
 	p = argparse.ArgumentParser(description='Gaia-ESO UVES manifest builder and downloader')
-	p.add_argument('--starlist', default='/workspace/data/common/manifests/starlist_30k.parquet')
-	p.add_argument('--manifest', default='/workspace/data/ges/manifests/ges_manifest.csv')
+	p.add_argument('--starlist', default=os.path.join('data', 'common', 'manifests', 'starlist_30k.parquet'))
+	p.add_argument('--manifest', default=os.path.join('data', 'ges', 'manifests', 'ges_manifest.csv'))
+	p.add_argument('--base-dir', default='data')
 	p.add_argument('--mode', choices=['build', 'download', 'both'], default='both')
 	p.add_argument('--concurrency', type=int, default=4)
+	p.add_argument('--downloader', choices=['python', 'wget'], default='python')
 	args = p.parse_args(argv)
 
 	ensure_dir(os.path.dirname(args.manifest))
 	if args.mode in {'build', 'both'}:
-		build_manifest(args.starlist, args.manifest)
+		build_manifest(args.starlist, args.manifest, base_dir=args.base_dir)
 	if args.mode in {'download', 'both'}:
-		download_from_manifest(args.manifest, concurrency=args.concurrency)
+		download_from_manifest(args.manifest, concurrency=args.concurrency, downloader=args.downloader)
 
 
 if __name__ == '__main__':

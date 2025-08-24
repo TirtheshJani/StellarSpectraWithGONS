@@ -129,14 +129,36 @@ def ingest_apogee_ids(apogee_csv: str) -> pd.DataFrame:
 SDSS_DR17_SQL = "https://skyserver.sdss.org/dr17/SkyServerWS/SearchTools/SqlSearch"
 
 
-def query_sdss_sql(sql: str, fmt: str = 'json', timeout: int = 60) -> pd.DataFrame:
+def query_sdss_sql(sql: str, fmt: str = 'json', timeout: int = 60, retries: int = 5) -> pd.DataFrame:
 	"""Query SDSS SkyServer SQL endpoint and return a DataFrame.
 
 	fmt can be 'json', 'csv', or 'tsv'.
 	"""
 	params = {'cmd': sql, 'format': fmt}
-	resp = requests.get(SDSS_DR17_SQL, params=params, timeout=timeout)
-	resp.raise_for_status()
+	headers = {
+		'Connection': 'close',
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'User-Agent': 'StellarSpectraWithGONS/1.0 (+https://github.com/)'
+	}
+	last_exc: Optional[Exception] = None
+	for attempt in range(max(1, retries)):
+		try:
+			# Use POST to avoid overly long URLs when querying many IDs
+			resp = requests.post(SDSS_DR17_SQL, data=params, timeout=timeout, headers=headers)
+			resp.raise_for_status()
+			break
+		except Exception as e:
+			last_exc = e
+			# Exponential backoff: 0.5, 1, 2, 4, ... seconds
+			sleep_s = min(8.0, 0.5 * (2 ** attempt))
+			try:
+				import time as _time
+				_time.sleep(sleep_s)
+			except Exception:
+				pass
+	else:
+		# Exhausted retries
+		raise last_exc if last_exc else RuntimeError('Unknown SDSS query failure')
 	if fmt == 'json':
 		payload = resp.json()
 		# Expect a list of dicts under 'Rows' or direct list
@@ -151,7 +173,7 @@ def chunked(iterable: Sequence[str], size: int) -> Iterable[List[str]]:
 		yield list(iterable[i:i + size])
 
 
-def fetch_apogee_positions(apogee_ids: Sequence[str], chunk_size: int = 4000) -> pd.DataFrame:
+def fetch_apogee_positions(apogee_ids: Sequence[str], chunk_size: int = 1000, timeout: int = 90, retries: int = 5, sleep_ms: int = 0) -> pd.DataFrame:
 	"""Fetch RA/Dec for given APOGEE IDs from DR17.
 
 	Tries apogeeStar first; falls back to apogeeObject/aspcapStar if needed.
@@ -161,31 +183,54 @@ def fetch_apogee_positions(apogee_ids: Sequence[str], chunk_size: int = 4000) ->
 	print(f"Querying DR17 for {len(unique_ids)} unique APOGEE IDs in chunks of {chunk_size}")
 
 	results: List[pd.DataFrame] = []
-	for batch in chunked(unique_ids, chunk_size):
-		id_list = ",".join([f"'{i}'" for i in batch])
-		queries = [
-			# Preferred: apogeeStar view with ra/dec
-			f"SELECT apogee_id, ra, dec FROM apogeeStar WHERE apogee_id IN ({id_list})",
-			# Fallback: aspcapStar for some DRs
-			f"SELECT apogee_id, ra, dec FROM aspcapStar WHERE apogee_id IN ({id_list})",
-			# Fallback: apogeeObject stores location_id based positions in some DRs
-			f"SELECT apogee_id, ra, dec FROM apogeeObject WHERE apogee_id IN ({id_list})",
-		]
-		batch_df = None
-		last_err: Optional[Exception] = None
-		for q in queries:
+
+	def _sleep_between_requests() -> None:
+		if sleep_ms and sleep_ms > 0:
 			try:
-				df = query_sdss_sql(q, fmt='json')
-				if not df.empty and {'apogee_id', 'ra', 'dec'}.issubset(set(df.columns)):
-					batch_df = df[['apogee_id', 'ra', 'dec']].copy()
-					break
-			except Exception as e:  # keep trying fallbacks
-				last_err = e
-		if batch_df is None:
-			if last_err:
-				print(f"Warning: DR17 SQL batch failed; last error: {last_err}")
-			else:
-				print("Warning: DR17 SQL batch returned no data")
+				import time as _time
+				_time.sleep(max(0.0, sleep_ms) / 1000.0)
+			except Exception:
+				pass
+
+	def _try_fetch_for_ids(ids: Sequence[str]) -> Optional[pd.DataFrame]:
+		id_list_local = ",".join([f"'{i}'" for i in ids])
+		queries_local = [
+			f"SELECT apogee_id, ra, dec FROM apogeeStar WHERE apogee_id IN ({id_list_local})",
+			f"SELECT apogee_id, ra, dec FROM aspcapStar WHERE apogee_id IN ({id_list_local})",
+			f"SELECT apogee_id, ra, dec FROM apogeeObject WHERE apogee_id IN ({id_list_local})",
+		]
+		last_err_local: Optional[Exception] = None
+		for q in queries_local:
+			try:
+				df_local = query_sdss_sql(q, fmt='csv', timeout=timeout, retries=retries)
+				if not df_local.empty and {'apogee_id', 'ra', 'dec'}.issubset(set(df_local.columns)):
+					return df_local[['apogee_id', 'ra', 'dec']].copy()
+			except Exception as e:
+				last_err_local = e
+		# If all queries failed and we have multiple IDs, recursively split
+		if len(ids) > 1:
+			midpoint = len(ids) // 2
+			left = _try_fetch_for_ids(ids[:midpoint])
+			_sleep_between_requests()
+			right = _try_fetch_for_ids(ids[midpoint:])
+			if left is None and right is None:
+				return None
+			frames = []
+			if left is not None:
+				frames.append(left)
+			if right is not None:
+				frames.append(right)
+			return pd.concat(frames, ignore_index=True) if frames else None
+		# Single ID failed completely
+		if last_err_local:
+			print(f"Warning: DR17 query failed for {ids[0]} ; last error: {last_err_local}")
+		return None
+
+	for batch in chunked(unique_ids, chunk_size):
+		batch_df = _try_fetch_for_ids(batch)
+		_sleep_between_requests()
+		if batch_df is None or batch_df.empty:
+			print("Warning: DR17 SQL batch returned no data")
 			continue
 		# Normalize types
 		batch_df['apogee_id'] = batch_df['apogee_id'].apply(normalize_bstring)
@@ -495,86 +540,107 @@ def run_pipeline(apogee_csv: str,
 				  galah_positions_out: str,
 				  ges_positions_out: str,
 				  starlist_out: str,
-				  target_size: int = 30000) -> None:
+				  target_size: int = 30000,
+				  dr17_chunk_size: int = 1000,
+				  dr17_timeout: int = 90,
+				  dr17_retries: int = 5,
+				  dr17_sleep_ms: int = 0) -> None:
 	# T1.1
 	apogee_ids_df = ingest_apogee_ids(apogee_csv)
 	print(f"Loaded {len(apogee_ids_df):,} APOGEE candidate IDs from {apogee_csv}")
 
 	# T1.2
-	apogee_positions = fetch_apogee_positions(apogee_ids_df['apogee_id'].tolist())
+	apogee_positions = fetch_apogee_positions(
+		apogee_ids=apogee_ids_df['apogee_id'].tolist(),
+		chunk_size=dr17_chunk_size,
+		timeout=dr17_timeout,
+		retries=dr17_retries,
+		sleep_ms=dr17_sleep_ms,
+	)
 	store_apogee_positions(apogee_positions, apogee_positions_out)
 
-	# T1.3
-	galah_pos = load_galah_positions(galah_positions)
-	ensure_dir(os.path.dirname(galah_positions_out))
-	galah_pos.to_parquet(galah_positions_out, index=False)
-	print(f"Wrote GALAH positions to {galah_positions_out}")
-
-	ges_pos = load_ges_positions(ges_positions)
-	ensure_dir(os.path.dirname(ges_positions_out))
-	ges_pos.to_parquet(ges_positions_out, index=False)
-	print(f"Wrote GES positions to {ges_positions_out}")
-
-	triple = build_three_way(
-		apogee_pos=apogee_positions[['apogee_id', 'ra', 'dec']].copy(),
-		galah_pos=galah_pos[['galah_id', 'ra', 'dec']].copy(),
-		ges_pos=ges_pos[['ges_id', 'ra', 'dec']].copy(),
-	)
-
-	# T1.4 – Downselect to exactly 30,000
-	if len(triple) >= target_size:
-		final = stratified_sample(triple, target_size)
+	# T1.3 – Crossmatch GALAH & GES to the APOGEE list without downselection
+	# Allow skipping GALAH/GES if not provided; downstream downloaders can use positional queries.
+	if galah_positions is not None:
+		galah_pos = load_galah_positions(galah_positions)
+		ensure_dir(os.path.dirname(galah_positions_out))
+		galah_pos.to_parquet(galah_positions_out, index=False)
+		print(f"Wrote GALAH positions to {galah_positions_out}")
 	else:
-		# Augment with two-way matches flags
-		final = triple.copy()
-		final['match_flag'] = 'three-way'
-		missing = target_size - len(final)
-		print(f"Three-way matches: {len(triple):,}; need to augment {missing:,} from two-way matches")
-		# Two-way APOGEE–GALAH
-		m_ag = spherical_match(apogee_positions, galah_pos, 'ra', 'dec', 'ra', 'dec', max_arcsec=1.0)
-		m_ag = resolve_duplicates(m_ag)
-		df_ag = pd.DataFrame({
-			'ra': apogee_positions.iloc[m_ag['left_ix']]['ra'].to_numpy(),
-			'dec': apogee_positions.iloc[m_ag['left_ix']]['dec'].to_numpy(),
-			'apogee_id': apogee_positions.iloc[m_ag['left_ix']]['apogee_id'].to_numpy(),
-			'galah_id': galah_pos.iloc[m_ag['right_ix']]['galah_id'].to_numpy(),
-			'ges_id': pd.Series([None] * len(m_ag)),
-			'sep_ag': m_ag['sep_arcsec'].to_numpy(),
-			'sep_ae': pd.Series([np.nan] * len(m_ag)),
-			'source_id': pd.Series([np.nan] * len(m_ag)),
-			'match_flag': 'two-way-ag',
-		})
-		# Two-way APOGEE–GES
-		m_ae = spherical_match(apogee_positions, ges_pos, 'ra', 'dec', 'ra', 'dec', max_arcsec=1.0)
-		m_ae = resolve_duplicates(m_ae)
-		df_ae = pd.DataFrame({
-			'ra': apogee_positions.iloc[m_ae['left_ix']]['ra'].to_numpy(),
-			'dec': apogee_positions.iloc[m_ae['left_ix']]['dec'].to_numpy(),
-			'apogee_id': apogee_positions.iloc[m_ae['left_ix']]['apogee_id'].to_numpy(),
-			'galah_id': pd.Series([None] * len(m_ae)),
-			'ges_id': ges_pos.iloc[m_ae['right_ix']]['ges_id'].to_numpy(),
-			'sep_ag': pd.Series([np.nan] * len(m_ae)),
-			'sep_ae': m_ae['sep_arcsec'].to_numpy(),
-			'source_id': pd.Series([np.nan] * len(m_ae)),
-			'match_flag': 'two-way-ae',
-		})
-		aug = pd.concat([df_ag, df_ae], ignore_index=True)
-		# Remove any rows that already present in three-way
-		if not final.empty:
-			already = set(zip(final['apogee_id'], final['galah_id'], final['ges_id']))
-			aug = aug[[tuple(x) not in already for x in zip(aug['apogee_id'], aug['galah_id'], aug['ges_id'])]]
-		need = max(0, target_size - len(final))
-		if need > 0 and not aug.empty:
-			final = pd.concat([final, aug.sample(n=min(need, len(aug)), random_state=42)], ignore_index=True)
-		if len(final) < target_size:
-			print(f"Warning: only {len(final):,} rows after augmentation; fewer than target {target_size:,}")
+		galah_pos = pd.DataFrame(columns=['galah_id', 'ra', 'dec'])
 
-	# Ensure final schema and save
-	final = final[['source_id', 'ra', 'dec', 'apogee_id', 'galah_id', 'ges_id'] +
-				  [c for c in final.columns if c not in {'source_id', 'ra', 'dec', 'apogee_id', 'galah_id', 'ges_id'}]]
+	if ges_positions is not None:
+		ges_pos = load_ges_positions(ges_positions)
+		ensure_dir(os.path.dirname(ges_positions_out))
+		ges_pos.to_parquet(ges_positions_out, index=False)
+		print(f"Wrote GES positions to {ges_positions_out}")
+	else:
+		ges_pos = pd.DataFrame(columns=['ges_id', 'ra', 'dec'])
+
+	# Two separate left-joins on sky to keep exactly the APOGEE set
+	m_ag = spherical_match(apogee_positions, galah_pos, 'ra', 'dec', 'ra', 'dec', max_arcsec=1.0)
+	m_ag = resolve_duplicates(m_ag)
+	m_ae = spherical_match(apogee_positions, ges_pos, 'ra', 'dec', 'ra', 'dec', max_arcsec=1.0)
+	m_ae = resolve_duplicates(m_ae)
+
+	# Prepare arrays aligned to apogee_positions index
+	galah_id_aligned = pd.Series([None] * len(apogee_positions))
+	sep_ag_aligned = pd.Series([np.nan] * len(apogee_positions), dtype=float)
+	if not m_ag.empty:
+		galah_id_aligned.iloc[m_ag['left_ix'].to_numpy()] = galah_pos.iloc[m_ag['right_ix'].to_numpy()]['galah_id'].to_numpy()
+		sep_ag_aligned.iloc[m_ag['left_ix'].to_numpy()] = m_ag['sep_arcsec'].to_numpy()
+
+	ges_id_aligned = pd.Series([None] * len(apogee_positions))
+	sep_ae_aligned = pd.Series([np.nan] * len(apogee_positions), dtype=float)
+	if not m_ae.empty:
+		ges_id_aligned.iloc[m_ae['left_ix'].to_numpy()] = ges_pos.iloc[m_ae['right_ix'].to_numpy()]['ges_id'].to_numpy()
+		sep_ae_aligned.iloc[m_ae['left_ix'].to_numpy()] = m_ae['sep_arcsec'].to_numpy()
+
+	final = pd.DataFrame({
+		'source_id': pd.Series(dtype='float64'),
+		'ra': apogee_positions['ra'].astype(float).to_numpy(),
+		'dec': apogee_positions['dec'].astype(float).to_numpy(),
+		'apogee_id': apogee_positions['apogee_id'].to_numpy(),
+		'galah_id': galah_id_aligned.to_numpy(object),
+		'ges_id': ges_id_aligned.to_numpy(object),
+		'sep_ag': sep_ag_aligned.to_numpy(float),
+		'sep_ae': sep_ae_aligned.to_numpy(float),
+	})
+
+	# Ensure acceptance schema:
+	# star_id, ra, dec, apogee_id, galah_id, ges_id,
+	# in_all_three (bool), in_apogee, in_galah, in_ges, match_sep_arcsec
+	work = final.copy()
+	# Compute booleans
+	work['in_apogee'] = work['apogee_id'].notna()
+	work['in_galah'] = work['galah_id'].notna()
+	work['in_ges'] = work['ges_id'].notna()
+	work['in_all_three'] = work['in_apogee'] & work['in_galah'] & work['in_ges']
+	# One separation field: prefer the larger of available separations for conservative reporting,
+	# otherwise whichever exists
+	sep_ag = work['sep_ag'] if 'sep_ag' in work.columns else pd.Series([np.nan] * len(work))
+	sep_ae = work['sep_ae'] if 'sep_ae' in work.columns else pd.Series([np.nan] * len(work))
+	work['match_sep_arcsec'] = np.fmax(sep_ag.fillna(-np.inf), sep_ae.fillna(-np.inf))
+	work.loc[~np.isfinite(work['match_sep_arcsec']), 'match_sep_arcsec'] = sep_ag.combine_first(sep_ae)
+	# Create deterministic star_id 1..N
+	work = work.reset_index(drop=True)
+	work.insert(0, 'star_id', (work.index + 1).astype(np.int64))
+	# Enforce exactly target_size rows if possible
+	if len(work) > target_size:
+		work = stratified_sample(work, target_size)
+		work = work.reset_index(drop=True)
+		work['star_id'] = (work.index + 1).astype(np.int64)
+	# Select and order columns
+	cols = ['star_id', 'ra', 'dec', 'apogee_id', 'galah_id', 'ges_id',
+			'in_all_three', 'in_apogee', 'in_galah', 'in_ges', 'match_sep_arcsec']
+	missing_cols = [c for c in cols if c not in work.columns]
+	for c in missing_cols:
+		work[c] = pd.Series([np.nan] * len(work))
+	out_df = work[cols]
+	# Save
 	ensure_dir(os.path.dirname(starlist_out))
-	final.to_parquet(starlist_out, index=False)
-	print(f"Wrote final star list ({len(final):,} rows) to {starlist_out}")
+	out_df.to_parquet(starlist_out, index=False)
+	print(f"Wrote final star list ({len(out_df):,} rows) to {starlist_out}")
 
 
 # ------------------------------
@@ -584,15 +650,20 @@ def run_pipeline(apogee_csv: str,
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 	p = argparse.ArgumentParser(description='Build consolidated 30k star list from APOGEE/GALAH/GES')
-	p.add_argument('--apogee-csv', default='/mnt/data/Apogee_ID.csv', help='Path to Apogee_ID.csv')
+	p.add_argument('--apogee-csv', default=os.path.join('scripts', 'Apogee_ID.csv'), help='Path to Apogee_ID.csv')
 	p.add_argument('--galah', default=None, help='Path to GALAH DR3 positions CSV/Parquet (optional)')
 	p.add_argument('--ges', default=None, help='Path to GES DR4 UVES positions CSV/Parquet (optional)')
-	p.add_argument('--apogee-out', default='/workspace/data/apogee/manifests/apogee_positions.parquet')
-	p.add_argument('--galah-out', default='/workspace/data/galah/manifests/galah_positions.parquet')
-	p.add_argument('--ges-out', default='/workspace/data/ges/manifests/ges_positions.parquet')
-	p.add_argument('--starlist-out', default='/workspace/data/common/manifests/starlist_30k.parquet')
+	p.add_argument('--apogee-out', default=os.path.join('data', 'apogee', 'manifests', 'apogee_positions.parquet'))
+	p.add_argument('--galah-out', default=os.path.join('data', 'galah', 'manifests', 'galah_positions.parquet'))
+	p.add_argument('--ges-out', default=os.path.join('data', 'ges', 'manifests', 'ges_positions.parquet'))
+	p.add_argument('--starlist-out', default=os.path.join('data', 'common', 'manifests', 'starlist_30k.parquet'))
 	p.add_argument('--target-size', type=int, default=30000)
 	p.add_argument('--mode', choices=['full', 'apogee-only'], default='full', help='full pipeline or only fetch APOGEE positions')
+	# Network tuning
+	p.add_argument('--dr17-chunk-size', type=int, default=1000, help='APOGEE DR17 query chunk size')
+	p.add_argument('--dr17-timeout', type=int, default=90, help='HTTP timeout seconds for DR17 queries')
+	p.add_argument('--dr17-retries', type=int, default=5, help='Number of retries per DR17 request')
+	p.add_argument('--dr17-sleep-ms', type=int, default=0, help='Sleep milliseconds between DR17 requests')
 	return p.parse_args(argv)
 
 
@@ -600,7 +671,13 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 	args = parse_args(argv)
 	if args.mode == 'apogee-only':
 		apogee_ids_df = ingest_apogee_ids(args.apogee_csv)
-		apogee_positions = fetch_apogee_positions(apogee_ids_df['apogee_id'].tolist())
+		apogee_positions = fetch_apogee_positions(
+			apogee_ids=apogee_ids_df['apogee_id'].tolist(),
+			chunk_size=args.dr17_chunk_size,
+			timeout=args.dr17_timeout,
+			retries=args.dr17_retries,
+			sleep_ms=args.dr17_sleep_ms,
+		)
 		store_apogee_positions(apogee_positions, args.apogee_out)
 		return
 	# default full
@@ -613,6 +690,10 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 		ges_positions_out=args.ges_out,
 		starlist_out=args.starlist_out,
 		target_size=args.target_size,
+		dr17_chunk_size=args.dr17_chunk_size,
+		dr17_timeout=args.dr17_timeout,
+		dr17_retries=args.dr17_retries,
+		dr17_sleep_ms=args.dr17_sleep_ms,
 	)
 
 

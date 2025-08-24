@@ -4,6 +4,7 @@ import time
 import math
 import queue
 import threading
+import subprocess
 from dataclasses import dataclass
 from typing import Optional, Iterable, List, Dict, Tuple
 
@@ -103,6 +104,28 @@ def stream_download(url: str, dest_path: str, timeout: int = 60, chunk_size: int
 		return DownloadResult(url, dest_path, 'error', getattr(e, 'response', None).status_code if hasattr(e, 'response') and e.response else 0, os.path.getsize(dest_path) if os.path.exists(dest_path) else 0, str(e))
 
 
+def wget_download(url: str, dest_path: str, timeout: int = 60) -> DownloadResult:
+	"""Download using external wget with resume. Requires wget in PATH.
+
+	Returns DownloadResult with http_status best-effort (0 if unknown).
+	"""
+	ensure_dir(os.path.dirname(dest_path))
+	cmd = [
+		"wget",
+		"-c",  # resume
+		"--timeout", str(timeout),
+		"--tries", "3",
+		"-O", dest_path,
+		url,
+	]
+	try:
+		proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+		status = 'ok' if proc.returncode == 0 and os.path.exists(dest_path) and os.path.getsize(dest_path) > 0 else 'error'
+		return DownloadResult(url, dest_path, status, 200 if status == 'ok' else 0, os.path.getsize(dest_path) if os.path.exists(dest_path) else 0, proc.stderr.decode(errors='ignore'))
+	except Exception as e:
+		return DownloadResult(url, dest_path, 'error', 0, os.path.getsize(dest_path) if os.path.exists(dest_path) else 0, str(e))
+
+
 def verify_fits_basic(path: str, required_headers: Optional[List[str]] = None) -> bool:
 	try:
 		with fits.open(path, memmap=False) as hdul:
@@ -118,7 +141,7 @@ def verify_fits_basic(path: str, required_headers: Optional[List[str]] = None) -
 
 
 def parallel_download(url_to_path: List[Tuple[str, str]], concurrency: int = 8, timeout: int = 60,
-					  verify_cb=None) -> List[DownloadResult]:
+					  verify_cb=None, downloader: str = 'python') -> List[DownloadResult]:
 	q: "queue.Queue[Tuple[str, str]]" = queue.Queue()
 	for u, p in url_to_path:
 		q.put((u, p))
@@ -131,7 +154,10 @@ def parallel_download(url_to_path: List[Tuple[str, str]], concurrency: int = 8, 
 				u, p = q.get_nowait()
 			except queue.Empty:
 				return
-			res = stream_download(u, p, timeout=timeout)
+			if downloader == 'wget':
+				res = wget_download(u, p, timeout=timeout)
+			else:
+				res = stream_download(u, p, timeout=timeout)
 			if res.status == 'ok' and verify_cb is not None:
 				try:
 					if not verify_cb(p):

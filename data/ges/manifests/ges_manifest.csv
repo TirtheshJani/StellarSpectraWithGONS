@@ -1,0 +1,4 @@
+remote_url,local_path,status,http_status,bytes
+https://archive.eso.org/dataPortal/api/requests/UVES_spec_000.fits,data/ges/uves/ges_uves_5000.000000_50.000000.fits,pending,200,2097152
+https://archive.eso.org/dataPortal/api/requests/UVES_spec_001.fits,data/ges/uves/ges_uves_5001.000000_51.000000.fits,pending,200,2097152
+https://archive.eso.org/dataPortal/api/requests/UVES_spec_002.fits,data/ges/uves/ges_uves_5002.000000_52.000000.fits,pending,200,2097152
