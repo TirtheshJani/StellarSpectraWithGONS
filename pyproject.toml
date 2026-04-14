@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stellar-spectra-gons"
+version = "0.1.0"
+description = "Gradient Origin Networks for cross-survey stellar spectra (APOGEE, GALAH, Gaia-ESO)."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "Tirthesh Jani" }]
+keywords = ["astronomy", "stellar-spectra", "deep-learning", "gon", "apogee", "galah", "gaia-eso"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Astronomy",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "requests>=2.31",
+    "astropy>=5.2",
+    "pyarrow>=14.0",
+    "h5py>=3.10",
+    "torch>=2.3",
+    "pyyaml>=6.0",
+    "matplotlib>=3.8",
+    "tqdm>=4.65",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "black>=24.3",
+    "mypy>=1.8",
+]
+notebooks = [
+    "jupyterlab>=4.1",
+    "ipywidgets>=8.1",
+]
+dvc = [
+    "dvc[gs,s3,ssh]>=3.50",
+]
+astronn = [
+    "astroNN>=1.1",
+]
+
+[project.urls]
+Repository = "https://github.com/TirtheshJani/StellarSpectraWithGONS"
+Issues = "https://github.com/TirtheshJani/StellarSpectraWithGONS/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.black]
+line-length = 110
+target-version = ["py310", "py311", "py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
