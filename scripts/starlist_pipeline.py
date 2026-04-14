@@ -18,7 +18,7 @@ from astropy.coordinates import SkyCoord
 
 # Local crossmatch utility
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from xmatch import xmatch  # noqa: E402
+from src.utils.xmatch import xmatch  # noqa: E402
 
 
 # ------------------------------
