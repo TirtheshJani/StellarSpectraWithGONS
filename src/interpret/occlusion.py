@@ -90,7 +90,12 @@ def _sample_random_windows(
     forbidden_mask: np.ndarray,
 ) -> list[tuple[float, float]]:
     """Draw ``n_segments`` random windows whose total width matches ``total_width_aa``
-    and avoid any bin flagged in ``forbidden_mask``."""
+    and avoid any bin flagged in ``forbidden_mask``.
+
+    All-or-nothing: returns ``[]`` if the full ``n_segments`` cannot be drawn,
+    so a partial sample never enters the null distribution with mismatched
+    geometry (Physicist convention: fail-closed on geometry mismatch).
+    """
     seg_width = total_width_aa / n_segments
     wmin = float(wave_centers.min())
     wmax = float(wave_centers.max())
@@ -103,7 +108,7 @@ def _sample_random_windows(
             picks.append((lo, hi))
             if len(picks) == n_segments:
                 return picks
-    return picks  # best-effort
+    return []
 
 
 def masked_line_ablation(
