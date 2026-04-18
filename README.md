@@ -47,6 +47,9 @@ This repository implements all three pieces end-to-end.
   gradient-based RV inference, and line-window-weighted losses.
 - **Storage** in compressed HDF5 (regridded) and PyArrow Parquet (native
   resolution, ragged arrays) with stratified train / val / test splits.
+- **Interpretability audit** for a LightGBM MK classifier trained on the GES
+  UVES subset — permutation importance, SHAP, sliding-window occlusion, and
+  masked-line ablation against a random-window null (see below).
 
 ## Repository layout
 
@@ -56,9 +59,10 @@ This repository implements all three pieces end-to-end.
 │   ├── fetch/                 # Survey-specific downloaders (APOGEE / GALAH / GES)
 │   ├── preprocess/            # Readers, resampling, continuum, HDF5 / Parquet builders
 │   ├── models/                # GON generator, coordinate encoders, losses
+│   ├── interpret/             # MK classifier + interpretability pipeline
 │   └── utils/                 # Cross-match and legacy HDF5 loaders
 ├── scripts/                   # End-to-end CLI drivers
-├── notebooks/                 # Tutorial notebooks (plotting, crossmatching)
+├── notebooks/                 # Tutorial notebooks (plotting, crossmatching, interpret demo)
 ├── docs/                      # Design PDF and implementation status
 ├── data/                      # Manifests (tracked); large FITS/H5 payloads ignored
 ├── tests/                     # Smoke tests
@@ -118,6 +122,71 @@ See `src/models/gon.py` for the full API, including `compute_gon_latent`
 (pure latent inference), `reconstruction_loss`, and SIREN / Fourier
 coordinate encoders.
 
+## Interpretability pipeline
+
+A LightGBM classifier predicts MK class (A / F / G / K) from the
+continuum-normalised GES UVES flux vector over 4800–6800 Å, rebinned to
+~1000 features. The audit then checks whether the classifier attends to
+canonical diagnostic lines (H Balmer, Mg b, Na D, Ca I 6162/6439) or to
+continuum / normalisation artefacts, and validates the finding causally
+with masked-line ablation against a random-window null.
+
+```bash
+pip install -e '.[interpret]'
+
+python scripts/build_labels.py \
+    --h5 data/common/processed/regridded_spectra.h5 \
+    --cache-dir data/ges/catalogs/ \
+    --out data/ges/labels/ges_mk_labels.parquet
+
+python scripts/build_features.py \
+    --h5 data/common/processed/regridded_spectra.h5 \
+    --labels data/ges/labels/ges_mk_labels.parquet \
+    --out data/interpret/features.npz \
+    --max-spectra 5000 --min-snr 20
+
+python scripts/train_classifier.py \
+    --features data/interpret/features.npz \
+    --model-out models/lightgbm_mk.pkl \
+    --metrics-out metrics/lightgbm_metrics.json
+
+python scripts/run_interpret.py \
+    --features data/interpret/features.npz \
+    --model models/lightgbm_mk.pkl \
+    --out-dir artifacts/
+
+python scripts/ablation.py \
+    --features data/interpret/features.npz \
+    --model models/lightgbm_mk.pkl \
+    --out-dir artifacts/
+
+python scripts/run_benchmark.py \
+    --features data/interpret/features.npz \
+    --model models/lightgbm_mk.pkl \
+    --pickles-dir data/external/pickles/ \
+    --out-dir artifacts/
+
+python scripts/make_figure.py \
+    --features data/interpret/features.npz \
+    --importance artifacts/perm_importance.npz \
+    --shap artifacts/shap_values.npz \
+    --out-dir figures/
+```
+
+Design choices (Pecaut & Mamajek 2013 Teff bins, UVES-air wavelengths,
+train-set median imputation, group-aware splits, bootstrap + random-null
+ablation) are documented in
+[`plan-stellar-wild-manatee.md`](plan-stellar-wild-manatee.md) and in the
+module docstrings under `src/interpret/`. Minimal walkthrough:
+[`notebooks/interpretability_demo.ipynb`](notebooks/interpretability_demo.ipynb).
+
+The citation grep gate ensures the shorthand "Liu et al 2019" is never used —
+the correct attribution is **Li, Lin & Qiu (2019)**:
+
+```bash
+bash scripts/check_citations.sh
+```
+
 ## Status
 
 Phase 1 (data collection infrastructure) and Phase 2 (preprocessing) are
@@ -143,11 +212,14 @@ compatible with line-window weighting and Huber losses.
 
 ```bash
 pytest
+bash scripts/check_citations.sh
 ```
 
 Tests are intentionally lightweight — they exercise imports, tensor shapes
-on the GON model, and helper utilities. Heavy I/O (real FITS, real HDF5) is
-covered by the tutorial notebooks in `notebooks/`.
+on the GON model, the MK-labels binning, the feature rebin/imputation,
+the LINE_SETS coverage contract, and the Pickles filename parser. Heavy
+I/O (real FITS, real HDF5) is covered by the tutorial notebooks in
+`notebooks/`.
 
 ## License
 
@@ -157,6 +229,14 @@ retain their respective survey licenses.
 ## Citation / acknowledgements
 
 - Bond-Taylor & Willcocks, *Gradient Origin Networks* (ICLR 2021).
-- SDSS-IV / APOGEE-2 (DR17), GALAH (DR3), and Gaia-ESO (DR4).
+- SDSS-IV / APOGEE-2 (DR17), GALAH (DR3), and Gaia-ESO (DR4 / DR5.1).
+- Pecaut & Mamajek (2013) for MK Teff calibration; Gray & Corbally (2009)
+  for MK line-strength diagnostics; Hourihane et al. (2023) for the GES
+  DR5.1 recommended-parameters catalog.
+- Pickles (1998, PASP 110, 863) stellar-spectrum library for the external
+  MK benchmark.
+- Li, Lin & Qiu (2019) for the LightGBM attribution-style audit that the
+  interpretability pipeline is modelled on. (This replaces the shorthand
+  "Liu et al 2019" referenced in early design drafts.)
 - The cross-match helper in `src/utils/xmatch.py` is adapted from
   [`astroNN`](https://github.com/henrysky/astroNN) by Henry Leung.
